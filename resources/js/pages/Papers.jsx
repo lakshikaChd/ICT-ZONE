@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '@/Components/Navbar';
 
 const Papers = ({ selectedGrade = "All" }) => {
@@ -15,35 +15,71 @@ const Papers = ({ selectedGrade = "All" }) => {
     "All": "text-[#5d81bd] bg-[#b5cbf0]/10 border-transparent"
   };
 
-  const [papers] = useState([
-    { id: 1, title: '1st Term Exam - Introduction to Computer & History', grade: '6', subject: 'ICT', term: 1, size: '1.2 MB' },
-    { id: 2, title: '2nd Term Exam - File Management & Operating Systems', grade: '7', subject: 'ICT', term: 2, size: '1.5 MB' },
-    { id: 3, title: '2nd Term Exam - Scratch Programming Basics', grade: '8', subject: 'ICT', term: 2, size: '1.8 MB' },
-    { id: 4, title: '3rd Term Exam - Word Processing & Spreadsheet Tools', grade: '9', subject: 'ICT', term: 3, size: '2.1 MB' },
-    { id: 5, title: '1st Term Exam - Data Representation & Number Systems', grade: '10', subject: 'ICT', term: 1, size: '2.4 MB' },
-    { id: 6, title: '2nd Term Exam - Logic Gates & Digital Circuits', grade: '10', subject: 'ICT', term: 2, size: '2.9 MB' },
-    { id: 7, title: '1st Term Exam - Operating Systems & Functions', grade: '11', subject: 'ICT', term: 1, size: '3.0 MB' },
-    { id: 8, title: '2nd Term Exam - Python Programming Theory & Practice', grade: '11', subject: 'ICT', term: 2, size: '3.5 MB' },
-    { id: 9, title: '3rd Term O/L - ICT Final Model Paper & Revision', grade: '11', subject: 'ICT', term: 3, size: '4.8 MB' },
-    { id: 10, title: '1st Term Exam - Data Communication & Advanced Networking', grade: '12', subject: 'ICT', term: 1, size: '3.8 MB' },
-    { id: 11, title: '2nd Term Exam - System Analysis and Design (SAD)', grade: '12', subject: 'ICT', term: 2, size: '4.0 MB' },
-    { id: 12, title: '1st Term Exam - Advanced Database Systems & SQL Queries', grade: '13', subject: 'ICT', term: 1, size: '4.2 MB' },
-    { id: 13, title: '2nd Term Exam - Web Development (HTML/CSS/JS) & PHP', grade: '13', subject: 'ICT', term: 2, size: '4.5 MB' },
-    { id: 14, title: '3rd Term A/L - ICT Target Model Paper (Structured & MCQ)', grade: '13', subject: 'ICT', term: 3, size: '5.6 MB' },
-  ]);
-
+  // State කළමනාකරණය
+  const [papers, setPapers] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [filterGrade, setFilterGrade] = useState(selectedGrade);
   const [filterTerm, setFilterTerm] = useState('All');
 
+  // Laravel Backend API URL
+  const API_URL = 'http://localhost:8000/api/papers';
+
+  // පිටුව Load වෙද්දී Laravel එකෙන් ඩේටා ලබාගැනීම
+  useEffect(() => {
+    fetchLivePapers();
+  }, []);
+
+  const fetchLivePapers = async () => {
+    try {
+      const response = await fetch(API_URL, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json'
+        }
+      });
+      const data = await response.json();
+      
+      if (response.ok) {
+        setPapers(data);
+      } else {
+        console.error("Backend Error:", data.message);
+      }
+    } catch (error) {
+      console.error("Error fetching papers from server:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Admin එකෙන් දාන Type එක අනුව Term එක අනුමාන කිරීම (Filtering පහසු කිරීමට)
+  const getTermFromType = (type) => {
+    if (type.includes('1st Term') || type.includes('Term Paper')) return 1; 
+    if (type.includes('2nd Term')) return 2;
+    if (type.includes('3rd Term') || type.includes('Past Paper') || type.includes('Model Paper')) return 3;
+    return 1; // Default
+  };
+
+  // සජීවී දත්ත Filter කිරීම
   const filteredPapers = papers.filter((paper) => {
+    const paperTerm = getTermFromType(paper.type);
+    
     return (
       (filterGrade === 'All' || paper.grade === filterGrade) &&
-      (filterTerm === 'All' || paper.term === parseInt(filterTerm))
+      (filterTerm === 'All' || paperTerm === parseInt(filterTerm))
     );
   });
 
   const grades = ['All', '6', '7', '8', '9', '10', '11', '12', '13'];
   const terms = ['All', '1', '2', '3'];
+
+  // PDF එක Download කිරීමට හෝ බැලීමට වෙනම Tab එකක විවෘත කිරීම
+  const handleDownload = (fileUrl) => {
+    if (fileUrl) {
+      window.open(fileUrl, '_blank', 'noopener,noreferrer');
+    } else {
+      alert('කණගාටුයි! මෙම ප්‍රශ්න පත්‍රයට අදාළ PDF ගොනුව සොයාගත නොහැක.');
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#fafbfc] font-sans text-[#071835] selection:bg-[#b5cbf0] selection:text-[#010813] antialiased">
@@ -117,7 +153,7 @@ const Papers = ({ selectedGrade = "All" }) => {
 
         </div>
 
-        {/* ================= MAIN CONTENT AREA (MODIFIED RIGHT VIEW) ================= */}
+        {/* ================= MAIN CONTENT AREA ================= */}
         <div className="lg:col-span-8 xl:col-span-9 space-y-5">
           
           {/* Top Active Info Bar */}
@@ -133,63 +169,72 @@ const Papers = ({ selectedGrade = "All" }) => {
               </span>
             </div>
             <span className="text-xs font-mono font-bold bg-[#5d81bd]/10 text-[#5d81bd] px-3 py-1 rounded-lg self-start sm:self-auto">
-              Found: {filteredPapers.length} Results
+              Found: {loading ? '...' : filteredPapers.length} Results
             </span>
           </div>
 
-          {/* --- NEW GRID CONTENT LAYOUT --- */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
-            {filteredPapers.map((paper) => {
-              const currentStyle = gradeStyles[paper.grade] || gradeStyles["All"];
+          {/* --- GRID CONTENT LAYOUT --- */}
+          {loading ? (
+            <div className="text-center py-20 font-medium text-gray-400">
+              ප්‍රශ්න පත්‍ර පද්ධතියෙන් පූරණය වෙමින් පවතී (Loading...)...
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+              {filteredPapers.map((paper) => {
+                const currentStyle = gradeStyles[paper.grade] || gradeStyles["All"];
 
-              return (
-                <div
-                  key={paper.id}
-                  className="group bg-white border border-[#b5cbf0]/30 hover:border-[#5d81bd]/40 p-5 rounded-2xl shadow-[0_4px_16px_rgba(7,24,53,0.02)] hover:shadow-[0_12px_24px_rgba(93,129,189,0.08)] transition-all duration-300 flex flex-col justify-between gap-5 relative overflow-hidden"
-                >
-                  {/* Decorative Subtle Corner Accent */}
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-[#b5cbf0]/10 to-transparent rounded-bl-full pointer-events-none" />
+                return (
+                  <div
+                    key={paper.id}
+                    className="group bg-white border border-[#b5cbf0]/30 hover:border-[#5d81bd]/40 p-5 rounded-2xl shadow-[0_4px_16px_rgba(7,24,53,0.02)] hover:shadow-[0_12px_24px_rgba(93,129,189,0.08)] transition-all duration-300 flex flex-col justify-between gap-5 relative overflow-hidden"
+                  >
+                    {/* Decorative Subtle Corner Accent */}
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-[#b5cbf0]/10 to-transparent rounded-bl-full pointer-events-none" />
 
-                  {/* Upper Block: Meta info + Title */}
-                  <div className="space-y-3.5 relative z-10">
-                    <div className="flex justify-between items-center">
-                      <span className={`font-mono text-[9px] font-extrabold px-2 py-0.5 rounded border tracking-wider uppercase ${currentStyle}`}>
-                        Grade {paper.grade}
-                      </span>
-                      <span className="text-[10px] font-mono text-gray-400 font-medium">
-                        {paper.size}
-                      </span>
+                    {/* Upper Block: Meta info + Title */}
+                    <div className="space-y-3.5 relative z-10">
+                      <div className="flex justify-between items-center">
+                        <span className={`font-mono text-[9px] font-extrabold px-2 py-0.5 rounded border tracking-wider uppercase ${currentStyle}`}>
+                          Grade {paper.grade}
+                        </span>
+                        <span className="text-[10px] font-mono text-gray-400 font-medium">
+                          {paper.year}
+                        </span>
+                      </div>
+
+                      <h3 className="font-bold text-[#071835] group-hover:text-[#5d81bd] transition-colors duration-200 text-[15px] leading-snug line-clamp-3 min-h-[68px]">
+                        {paper.title}
+                      </h3>
+
+                      {/* Bottom Inline Badges */}
+                      <div className="flex items-center gap-2 border-t border-gray-100 pt-3">
+                        <span className="px-2 py-0.5 rounded-md bg-gray-50 border border-gray-200 text-gray-500 font-mono font-bold text-[9px] uppercase">
+                          {paper.type}
+                        </span>
+                        <span className="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-100 font-sans font-bold text-[9px] uppercase tracking-wide">
+                          Official PDF
+                        </span>
+                      </div>
                     </div>
 
-                    <h3 className="font-bold text-[#071835] group-hover:text-[#5d81bd] transition-colors duration-200 text-[15px] leading-snug line-clamp-3 min-h-[68px]">
-                      {paper.title}
-                    </h3>
-
-                    {/* Bottom Inline Badges */}
-                    <div className="flex items-center gap-2 border-t border-gray-100 pt-3">
-                      <span className="px-2 py-0.5 rounded-md bg-gray-50 border border-gray-200 text-gray-500 font-mono font-bold text-[9px]">
-                        TERM 0{paper.term}
-                      </span>
-                      <span className="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-100 font-sans font-bold text-[9px] uppercase tracking-wide">
-                        Official PDF
-                      </span>
-                    </div>
+                    {/* Lower Block: Action Download Area */}
+                    <button 
+                      onClick={() => handleDownload(paper.file_url)}
+                      className="w-full py-2.5 bg-gradient-to-r from-[#071835] to-[#122e5c] hover:from-[#5d81bd] hover:to-[#4a6fa8] text-white font-mono font-bold text-[11px] uppercase tracking-wider rounded-xl transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2 shadow-sm"
+                    >
+                      <span>Download / View</span>
+                      <svg fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-3.5 h-3.5">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                      </svg>
+                    </button>
                   </div>
-
-                  {/* Lower Block: Action Download Area */}
-                  <button className="w-full py-2.5 bg-gradient-to-r from-[#071835] to-[#122e5c] hover:from-[#5d81bd] hover:to-[#4a6fa8] text-white font-mono font-bold text-[11px] uppercase tracking-wider rounded-xl transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2 shadow-sm">
-                    <span>Download</span>
-                    <svg fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-3.5 h-3.5">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
-                    </svg>
-                  </button>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          )}
 
           {/* Clean Rounded Empty State */}
-          {filteredPapers.length === 0 && (
+          {!loading && filteredPapers.length === 0 && (
             <div className="text-center py-20 bg-white rounded-2xl border border-dashed border-[#b5cbf0] p-6 shadow-sm">
               <div className="w-12 h-12 rounded-full bg-gray-50 border border-gray-200 flex items-center justify-center mx-auto mb-3 text-gray-400">
                 <svg fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
@@ -198,7 +243,7 @@ const Papers = ({ selectedGrade = "All" }) => {
               </div>
               <h3 className="text-sm font-bold text-[#071835] uppercase tracking-wider">ප්‍රශ්න පත්‍ර හමුවුණේ නැත</h3>
               <p className="text-gray-500 text-xs mt-1 max-w-xs mx-auto">
-                තෝරාගත් ශ්‍රේණිය හෝ වාරය සඳහා ප්‍රශ්න පත්‍ර තවම ඇතුළත් කර නැත. වෙනත් වාරයක් තෝරා බලන්න.
+                තෝරාගත් ශ්‍රේණිය හෝ වාරය සඳහා ප්‍රශ්න පත්‍ර තවම පද්ධතියට ඇතුළත් කර නැත. වෙනත් වාරයක් හෝ ශ්‍රේණියක් තෝරා බලන්න.
               </p>
             </div>
           )}
