@@ -18,7 +18,7 @@ const PapersManagement = () => {
   // File State
   const [selectedFile, setSelectedFile] = useState(null);
 
-  // Component එක මුලින්ම Load වෙද්දී දත්ත ලබාගැනීම
+ 
   useEffect(() => {
     fetchPapers();
   }, []);
@@ -56,7 +56,7 @@ const PapersManagement = () => {
     setSelectedFile(e.target.files[0]);
   };
 
-  // නව Paper එකක් Submit කිරීම
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.title.trim()) return alert('කරුණාකර Paper එකේ නම ඇතුළත් කරන්න!');
