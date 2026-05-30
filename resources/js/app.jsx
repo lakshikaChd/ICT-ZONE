@@ -1,7 +1,7 @@
 import './bootstrap';
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"; // Navigate එකත් එකතු කරගන්න
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"; 
 
 import Home from "./pages/Home";
 import Papers from "./pages/Papers";
@@ -10,7 +10,7 @@ import Quizzes from "./pages/Quizzes";
 import Grade6 from "./pages/Grade6";
 
 // Admin කොටස්
-import AdminNav from "./components/AdminNav"; // <--- AdminNav එක මෙතනට Import කරගන්න
+import AdminNav from "./components/AdminNav"; 
 import Dashboard from "./pages/Admin/Dashboard";
 import TutesMannage from "./pages/Admin/TutesMannage";
 import QuizzesMannagement from "./pages/Admin/QuizzesMannagement";
