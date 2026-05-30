@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import axios from 'axios'; // Axios import කරන ලදී
+import axios from 'axios'; 
 
 const Quizzes = () => {
     const [searchParams, setSearchParams] = useSearchParams();
