@@ -87,7 +87,7 @@ const PapersManagement = () => {
         document.getElementById('paperFileInput').value = ''; 
         alert('ප්‍රශ්න පත්‍රය සාර්ථකව පද්ධතියට එකතු කරන ලදී!');
       } else {
-        // Validation දෝෂ ඇත්නම් ඒවා වෙන්කර පෙන්වීම
+        
         if (resData.errors) {
           const errorMessages = Object.values(resData.errors).flat().join('\n');
           alert(`ඇතුළත් කිරීම් වැරදියි:\n${errorMessages}`);
@@ -101,7 +101,7 @@ const PapersManagement = () => {
     }
   };
 
-  // Paper එකක් අයින් කිරීම
+  
   const handleDelete = async (id) => {
     if (confirm('මෙම ප්‍රශ්න පත්‍රය පද්ධතියෙන් ඉවත් කිරීමට අවශ්‍යද?')) {
       try {
