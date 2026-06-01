@@ -3,13 +3,13 @@ import { Link } from 'react-router-dom';
 
 const Navbar = () => {
   return (
-    // Ultra-Sleek Matte design: #0a0f1d පසුබිම සහ ඉතා සිහින් පහළ බෝඩරය සමඟ.
+    
     <nav className="flex items-center justify-between px-6 md:px-16 py-3.5 bg-[#0a0f1d] border-b border-[#5d81bd]/10 sticky top-0 z-50 w-full">
 
       {/* --- LOGO SECTION --- */}
       <div className="flex items-center">
         <Link to="/" className="flex items-center gap-2.5 group">
-          {/* Minimal Angular Icon - Gradient රහිත පිරිසිදු Flat Tech look එකක් */}
+        
           <div className="w-8 h-8 bg-[#5d81bd] rounded flex items-center justify-center transition-transform duration-300 group-hover:bg-[#b5cbf0]">
             <span className="text-[#010813] font-mono font-black text-base">IZ</span>
           </div>
@@ -21,7 +21,7 @@ const Navbar = () => {
       </div>
 
       {/* --- MIDDLE NAVIGATION LINKS --- */}
-      {/* සලකුණු (`//`) ඉවත් කර, පිරිසිදු Dots (`•`) සහ Underline animations එකතු කර ඇත */}
+      
       <div className="hidden lg:flex items-center space-x-8 font-mono text-[11px] uppercase tracking-widest text-[#b5cbf0]/80">
         <Link to="/" className="relative py-1 hover:text-white transition-colors group">
           Home
@@ -53,7 +53,6 @@ const Navbar = () => {
           Sign_In
         </Link>
         
-        {/* Join Free Button - Solid Color එකක් වෙනුවට ඉතාම Professional Border Button එකක් (Clean Aesthetic) */}
         <Link 
           to="/register" 
           className="px-4 py-2 border border-[#5d81bd] text-[#5d81bd] rounded font-mono font-bold text-[11px] uppercase tracking-wider hover:bg-[#5d81bd] hover:text-[#010813] transition-all duration-200 active:scale-[0.98]"
