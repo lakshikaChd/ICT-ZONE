@@ -6,7 +6,7 @@ const Navbar = () => {
     
     <nav className="flex items-center justify-between px-6 md:px-16 py-3.5 bg-[#0a0f1d] border-b border-[#5d81bd]/10 sticky top-0 z-50 w-full">
 
-      {/* --- LOGO SECTION --- */}
+      
       <div className="flex items-center">
         <Link to="/" className="flex items-center gap-2.5 group">
         
