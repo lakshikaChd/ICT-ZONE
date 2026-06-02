@@ -13,7 +13,7 @@ const Navbar = () => {
           <div className="w-8 h-8 bg-[#5d81bd] rounded flex items-center justify-center transition-transform duration-300 group-hover:bg-[#b5cbf0]">
             <span className="text-[#010813] font-mono font-black text-base">IZ</span>
           </div>
-          {/* Logo Text */}
+          
           <span className="text-base font-black tracking-tight text-white font-mono uppercase">
             ICTZone
           </span>
